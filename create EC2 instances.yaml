@@ -19,7 +19,7 @@
 
   tasks:
   - name: Create a security group
-    community.aws.ec2_group:
+    amazon.aws.ec2_security_group:
       name: "{{ sg_name }}"
       description: "{{ sg_description }}"
       region: "{{ region }}"
