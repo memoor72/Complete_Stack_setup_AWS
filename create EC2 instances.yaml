@@ -1,29 +1,52 @@
-- name: Create a security group
-  community.aws.ec2_group:
-    name: "{{ security_group_name }}"
-    description: "Security group for my EC2 instance"
-    vpc_id: "{{ vpc_id }}"
-    rules:
-      - proto: tcp
-        from_port: 22
-        to_port: 22
-        cidr_ip: 0.0.0.0/0
-  register: security_group
-
-- name: Launch EC2 instance
-  community.aws.ec2_instance:
-    instance_type: "{{ instance_type }}"
+---
+- name: Create EC2 instances
+  hosts: localhost
+  gather_facts: no
+  vars:
+    region: "{{ aws_region }}"
     image_id: "{{ ami_id }}"
-    region: "{{ region }}"
+    instance_type: "{{ instance_type }}"
     key_name: "{{ key_name }}"
-    count: "{{ instance_count }}"
-    security_group_ids:
-      - "{{ security_group.group_id }}"
-    vpc_subnet_id: "{{ subnet_id }}"
-    assign_public_ip: yes
-    tags:
-      Name: "{{ instance_name }}"
-  register: ec2_instance
+    count: "{{ count }}"
+    subnet_id: "{{ subnet_id }}"
+    security_group_name: "{{ security_group_name }}"
+    security_group_desc: "{{ security_group_desc }}"
+    vpc_id: "{{ vpc_id }}"
+    tag_name: "{{ tag_name }}"
+  tasks:
+  - name: Create a security group
+    community.aws.ec2_group:
+      name: "{{ security_group_name }}"
+      description: "{{ security_group_desc }}"
+      region: "{{ region }}"
+      vpc_id: "{{ vpc_id }}"
+      rules:
+        - proto: tcp
+          from_port: 22
+          to_port: 22
+          cidr_ip: 0.0.0.0/0
+        - proto: tcp
+          from_port: 80
+          to_port: 80
+          cidr_ip: 0.0.0.0/0
+
+  - name: Launch EC2 instance
+    community.aws.ec2_instance:
+      instance_tags:
+        Name: "{{ tag_name }}"
+      region: "{{ region }}"
+      key_name: "{{ key_name }}"
+      instance_type: "{{ instance_type }}"
+      image_id: "{{ image_id }}"
+      count: "{{ count }}"
+      subnet_id: "{{ subnet_id }}"
+      assign_public_ip: true
+      vpc_security_group_ids: "{{ lookup('aws_ec2', 'security_groups', filters={'group-name': security_group_name, 'vpc-id': vpc_id}) }}"
+    register: ec2
+  - name: Show instance information
+    debug:
+      var: ec2.instances
+
 
 
 
