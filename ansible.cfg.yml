@@ -1,0 +1,5 @@
+---
+collections_paths:
+  - /home/ansiblecontroller/.ansible/collections
+  - /usr/share/ansible/collections
+  - /home/ansiblecontroller/.ansible/collections/community.aws
