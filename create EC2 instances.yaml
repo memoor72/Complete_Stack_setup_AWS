@@ -1,0 +1,20 @@
+---
+- name: Launch EC2 instances on AWS
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Launch EC2 instance
+      ansible.builtin.ec2:
+        key_name: demo_key
+        instance_type: t2.micro
+        image: ami-0e58f89e91723af4c
+        wait: yes
+        group: Demo_security_group
+        count: 1
+        vpc_subnet_id: default
+        assign_public_ip: yes
+        region: us-east-1
+        instance_tags:
+          Name: Demo_instance
+        state: present
+  register: ec2
