@@ -1,26 +1,35 @@
-- name: Launch EC2 instances on AWS
-  hosts: localhost
-  gather_facts: false
+- hosts: localhost
+  gather_facts: False
+  vars:
+    ami_id: "ami-0e58f89e91723af4c"
+    instance_type: "t2.micro"
+    key_name: "demo_key"
+    subnet_id: "subnet-0582e4bc11a2ab0d4"
+    security_group_id: "Demo_security_group"
+    instance_name: "Demo_instance"
   tasks:
-    - name: Launch EC2 instance
-      amazon.aws.ec2_instance:
-        key_name: demo_key
-        instance_type: t2.micro
-        image:
-          id: ami-0e58f89e91723af4c
-        wait: yes
-        group_id: Demo_security_group
-        count: 1
-        subnet_id: subnet-0582e4bc11a2ab0d4
-        assign_public_ip: yes
-        region: us-east-1
-        tags:
-          Name: Demo_instance
-        state: present
-      register: ec2
-
-    - name: Display the created instance details
-      debug:
-        var: ec2
+  - name: Launch EC2 instance
+    ec2_instance:
+      instance_type: "{{ instance_type }}"
+      image_id: "{{ ami_id }}"
+      key_name: "{{ key_name }}"
+      subnet_id: "{{ subnet_id }}"
+      vpc_subnet_id: "{{ subnet_id }}"
+      security_groups: ["{{ security_group_id }}"]
+      instance_tags:
+        Name: "{{ instance_name }}"
+      wait: true
+      wait_timeout: 600
+      state: present
+      termination_protection: true
+      validate_certs: false
+    register: ec2
+  - name: Add new instance to host group
+    add_host:
+      hostname: "{{ ec2.instance.public_ip }}"
+      ansible_host: "{{ ec2.instance.public_ip }}"
+      ansible_user: ec2-user
+      ansible_ssh_private_key_file: /path/to/your/key.pem
+      groupname: webservers
 
 
