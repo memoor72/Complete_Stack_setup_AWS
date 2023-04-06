@@ -1,27 +1,29 @@
----
+- name: Create a security group
+  community.aws.ec2_group:
+    name: "{{ security_group_name }}"
+    description: "Security group for my EC2 instance"
+    vpc_id: "{{ vpc_id }}"
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+  register: security_group
+
 - name: Launch EC2 instance
-  hosts: localhost
-  gather_facts: False
-  vars:
-    region: "us-east-1"
-    instance_type: "t2.micro"
-    ami_id: "ami-0e58f89e91723af4c"
-    key_name: "demo_key"
-    subnet_id: "subnet-0582e4bc11a2ab0d4"
-    security_group: "Demo_security_group"
-  tasks:
-    - name: Launch EC2 instance
-      community.aws.ec2_instance:
-        instance_type: "{{ instance_type }}"
-        image_id: "{{ ami_id }}"
-        key_name: "{{ key_name }}"
-        security_groups: "{{ security_group }}"
-        subnet_id: "{{ subnet_id }}"
-        wait: true
-        region: "{{ region }}"
-      register: ec2
-    - name: Print public IP of EC2 instance
-      debug:
-        var: ec2.instances[0].public_ip_address
+  community.aws.ec2_instance:
+    instance_type: "{{ instance_type }}"
+    image_id: "{{ ami_id }}"
+    region: "{{ region }}"
+    key_name: "{{ key_name }}"
+    count: "{{ instance_count }}"
+    security_group_ids:
+      - "{{ security_group.group_id }}"
+    vpc_subnet_id: "{{ subnet_id }}"
+    assign_public_ip: yes
+    tags:
+      Name: "{{ instance_name }}"
+  register: ec2_instance
+
 
 
