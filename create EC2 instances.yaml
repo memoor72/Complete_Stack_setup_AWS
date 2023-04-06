@@ -1,45 +1,48 @@
 ---
 - name: Create EC2 instances
   hosts: localhost
+  connection: local
   gather_facts: false
+
   vars:
-    region: "us-east-1"
-    image_id: "ami-0c94855ba95c71c99"
-    instance_type: "t2.micro"
-    security_group_name: "Demo_security_group"
-    key_name: "my_keypair"
+    instance_type: t2.micro
+    ami: ami-0c94855ba95c71c99
+    region: us-east-1
+    keypair: my-keypair
+    sg_name: my-security-group
+    sg_description: My security group
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+
   tasks:
   - name: Create a security group
     community.aws.ec2_group:
-      name: "{{ security_group_name }}"
-      description: "Allow SSH and HTTP access"
-      vpc_id: "vpc-0aa6f2c6d5db6d109"
-      rules:
-        - proto: tcp
-          ports:
-            - 22
-          cidr_ip: 0.0.0.0/0
-        - proto: tcp
-          ports:
-            - 80
-          cidr_ip: 0.0.0.0/0
+      name: "{{ sg_name }}"
+      description: "{{ sg_description }}"
+      region: "{{ region }}"
+      rules: "{{ rules }}"
+    register: security_group
+
   - name: Create a key pair
     community.aws.ec2_key:
-      name: "{{ key_name }}"
+      name: "{{ keypair }}"
       region: "{{ region }}"
-    register: key_pair
-  - name: Launch EC2 instance
-    community.aws.ec2_instance:
-      name: "webserver"
-      image_id: "{{ image_id }}"
+    register: keypair
+
+  - name: Launch an EC2 Instance
+    community.aws.ec2:
+      key_name: "{{ keypair.key.name }}"
       instance_type: "{{ instance_type }}"
-      key_name: "{{ key_name }}"
-      security_group: "{{ security_group_name }}"
-      wait: true
+      image_id: "{{ ami }}"
       region: "{{ region }}"
-    register: ec2_instance
-  - name: Print Public IP of instance
-    debug:
-      var: ec2_instance.public_ip_address
+      group_id: "{{ security_group.group_id }}"
+      count: 1
+      wait: true
+      instance_tags:
+        Name: my-instance
+
 
 
