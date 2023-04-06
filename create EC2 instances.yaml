@@ -17,4 +17,8 @@
         instance_tags:
           Name: Demo_instance
         state: present
-  register: ec2
+      register: ec2
+
+    - name: Display the created instance details
+      debug:
+        var: ec2
