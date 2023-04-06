@@ -4,7 +4,7 @@
   gather_facts: false
   tasks:
     - name: Launch EC2 instance
-      ansible.builtin.ec2:
+      amazon.aws.ec2_instance:
         key_name: demo_key
         instance_type: t2.micro
         image: ami-0e58f89e91723af4c
@@ -22,3 +22,5 @@
     - name: Display the created instance details
       debug:
         var: ec2
+
+
