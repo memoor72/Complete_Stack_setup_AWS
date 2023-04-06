@@ -9,10 +9,12 @@
         image:
           id: ami-0e58f89e91723af4c
         wait: yes
+        group_id: Demo_security_group
         count: 1
-        vpc_subnet_id: subnet-0582e4bc11a2ab0d4
+        subnet_id: subnet-0582e4bc11a2ab0d4
+        assign_public_ip: yes
         region: us-east-1
-        instance_tags:
+        tags:
           Name: Demo_instance
         state: present
       register: ec2
