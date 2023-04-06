@@ -1,31 +1,27 @@
 ---
 - name: Launch EC2 instance
   hosts: localhost
-  gather_facts: false
+  gather_facts: False
   vars:
     region: "us-east-1"
     instance_type: "t2.micro"
-    image_id: "ami-0e58f89e91723af4c"
+    ami_id: "ami-0e58f89e91723af4c"
+    key_name: "demo_key"
     subnet_id: "subnet-0582e4bc11a2ab0d4"
     security_group: "Demo_security_group"
-    key_name: "demo_key"
-    instance_tags:
-      Name: "Demo_instance"
   tasks:
     - name: Launch EC2 instance
-      amazon.aws.ec2_instance:
-        region: "{{ region }}"
+      community.aws.ec2_instance:
         instance_type: "{{ instance_type }}"
-        image_id: "{{ image_id }}"
-        subnet_id: "{{ subnet_id }}"
-        security_groups: "{{ security_group }}"
+        image_id: "{{ ami_id }}"
         key_name: "{{ key_name }}"
-        instance_tags: "{{ instance_tags }}"
+        security_groups: "{{ security_group }}"
+        subnet_id: "{{ subnet_id }}"
         wait: true
-        count: 1
-        state: present
+        region: "{{ region }}"
       register: ec2
-    - name: Show instance details
+    - name: Print public IP of EC2 instance
       debug:
-        var: ec2.instance_ids[0]
+        var: ec2.instances[0].public_ip_address
+
 
