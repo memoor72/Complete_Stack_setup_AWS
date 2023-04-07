@@ -6,8 +6,7 @@
   tasks: 
     - name: Import VPC setup variable 
       include_vars: vars/bastion_setup
-
-    - name: Import VPC setup Variable 
+    - name: Import VPC setup Variable
       include_vars: vars/output_vars
 
     - name: Create Devpro ec2 key
@@ -18,7 +17,7 @@
 
     - name: Save private key into file bastion-key.pem
       copy:
-        content: "{{key_output.key.private_key}}"
+        content: "{{key_out.key.private_key}}"
         dest: "./bastion-key.pem"
         mode: 0600
       when: key_out.changed
@@ -28,7 +27,6 @@
         name: Bastion-host-sg
         description: Allow port 22 from everywhere and all port within sg
         vpc_id: "{{vpcid}}"
-        profile: "{{ aws_profile }}"
         region: "{{region}}"
         rules:
           - proto: tcp
