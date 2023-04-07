@@ -14,7 +14,7 @@
       amazon.aws.ec2_key:
         name: devpro-key
         region: "{{region}}"
-      register: key_output
+      register: key_out
 
     - name: Save private key into file bastion-key.pem
       copy:
