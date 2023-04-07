@@ -41,8 +41,7 @@
         key_name: devpro-key
         region: "{{region}}"
         instance_type: t2.micro
-        image:
-          ami_id: "{{bastion_ami}}"
+        image_id: "{{bastion_ami}}"
         wait: yes
         wait_timeout: 300
         tags:
