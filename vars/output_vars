@@ -1,6 +1,5 @@
 
-=======
-vpcid: vpc-08ff80bf26ba704ff
+vpcid: vpc-0d8abefeab59c4e85
 pubsub1id: subnet-031804787ceab204e
 pubsub2id: subnet-0390c40a4082fc13c
 pubsub3id: subnet-0b12b1f0cafe18a52
@@ -10,4 +9,5 @@ privsub3id: subnet-05ed6c468c62b2c54
 igwid: igw-00bcfee85c89dbf85
 pubRTid: rtb-0b51a834c0e09655d
 NATGWid: nat-0576e615723f0fe72
-privRTid: rtb-0c3438ab436d6d14a 
+privRTid: rtb-0c3438ab436d6d14a
+ 
