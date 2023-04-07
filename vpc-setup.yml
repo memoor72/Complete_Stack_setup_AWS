@@ -5,13 +5,13 @@
     - name: Import VPC Variables
       include_vars: vars/vpc_setup
 
-    - name: Create vprofile VPC 
-      ec2_vpc_net: 
-        name: "{{vpc_name}}" 
-        cidr_block: "{{vpcCidr}}" 
-        region: "{{region}}" 
-        dns_support: yes
-        dns_hostnames: yes
+    - name: Create Devpro VPC
+      amazon.aws.ec2_vpc_net:
+        name: "{{vpc_name}}"
+        cidr_block: "{{vpcCidr}}"
+        region: "{{region}}"
+        dns_support: true
+        dns_hostnames: true
         tenancy: default
         state: "{{state}}"
       register: vpcout
@@ -19,78 +19,79 @@
   #  - debug:
   #     var: vpcout   
 
+
     - name: create Public Subnet 1 in Zone1
-      ec2_vpc_subnet: 
+      amazon.aws.ec2_vpc_subnet:
+        state: "{{state}}"
         vpc_id: "{{vpcout.vpc.id}}"
         region: "{{region}}"
         az: "{{zone1}}"
-        state: "{{state}}"
         cidr: "{{PubSub1Cidr}}"
         map_public: yes
-        resource_tags:
-           Name: vprofile-pubsub1
+        tags:
+          Name: devpro-pubsub1
       register: pubsub1_out
 
     - name: create Public Subnet 2 in Zone2
-      ec2_vpc_subnet: 
+      amazon.aws.ec2_vpc_subnet:
+        state: "{{state}}"
         vpc_id: "{{vpcout.vpc.id}}"
         region: "{{region}}"
         az: "{{zone2}}"
-        state: "{{state}}"
         cidr: "{{PubSub2Cidr}}"
         map_public: yes
-        resource_tags:
-           Name: vprofile-pubsub2
+        tags:
+          Name: devpro-pubsub2
       register: pubsub2_out
 
     - name: create Public Subnet 3 in Zone3
-      ec2_vpc_subnet: 
+      amazon.aws.ec2_vpc_subnet:
+        state: "{{state}}"
         vpc_id: "{{vpcout.vpc.id}}"
         region: "{{region}}"
         az: "{{zone3}}"
-        state: "{{state}}"
         cidr: "{{PubSub3Cidr}}"
         map_public: yes
-        resource_tags:
-           Name: vprofile-pubsub3
+        tags:
+          Name: devpro-pubsub3
       register: pubsub3_out
 
     - name: create Private Subnet 1 in Zone1
-      ec2_vpc_subnet: 
+      amazon.aws.ec2_vpc_subnet:
+        state: "{{state}}"
         vpc_id: "{{vpcout.vpc.id}}"
         region: "{{region}}"
         az: "{{zone1}}"
-        state: "{{state}}"
         cidr: "{{PrivSub1Cidr}}"
         map_public: yes
-        resource_tags:
-           Name: vprofile-privsub1
+        tags:
+          Name: devpro-privsub1
       register: privsub1_out
 
     - name: create Private Subnet 2 in Zone2
-      ec2_vpc_subnet: 
+      amazon.aws.ec2_vpc_subnet:
+        state: "{{state}}"
         vpc_id: "{{vpcout.vpc.id}}"
         region: "{{region}}"
         az: "{{zone2}}"
-        state: "{{state}}"
         cidr: "{{PrivSub2Cidr}}"
         map_public: yes
-        resource_tags:
-           Name: vprofile-privsub2
+        tags:
+          Name: devpro-privsub2
       register: privsub2_out
 
     - name: create Private Subnet 3 in Zone3
-      ec2_vpc_subnet: 
+      amazon.aws.ec2_vpc_subnet:
+        state: "{{state}}"
         vpc_id: "{{vpcout.vpc.id}}"
         region: "{{region}}"
         az: "{{zone3}}"
-        state: "{{state}}"
         cidr: "{{PrivSub3Cidr}}"
         map_public: yes
-        resource_tags:
-           Name: vprofile-privsub3
+        tags:
+          Name: devpro-privsub3
       register: privsub3_out
-    
+
     - name: create Internet Gateway Setup 
       ec2_vpc_igw:
         vpc_id: "{{vpcout.vpc.id}}"
@@ -100,12 +101,21 @@
            Name: vprofile-IGW
       register: igw_out
 
-    - name: Setup public subnet route table 
-      ec2_vpc_route_table:
+
+    - name: Create Internet gateway
+      amazon.aws.ec2_vpc_igw:
+        vpc_id: "{{vpcout.vpc.id}}"
+        state: "{{state}}"
+        tags:
+          Tag1: devpro-IGW
+      register: igw_out
+
+    - name: Set up public subnet route table
+      amazon.aws.ec2_vpc_route_table:
         vpc_id: "{{vpcout.vpc.id}}"
         region: "{{region}}"
         tags:
-          Name: Vprofile-PubRT
+          Name: Devpro-PubRT
         subnets:
           - "{{pubsub1_out.subnet.id}}"
           - "{{pubsub2_out.subnet.id}}"
@@ -116,13 +126,13 @@
       register: pubRT_out
 
     - name: Create new nat gateway and allocate new EIP if a nat gateway does not yet exist in the subnet.
-      ec2_vpc_nat_gateway:
+      amazon.aws.ec2_vpc_nat_gateway:
         state: "{{state}}"
         subnet_id: "{{pubsub1_out.subnet.id}}"
         wait: true
         region: "{{region}}"
         if_exist_do_not_create: true
-      register: NATGW_out
+      register: NATGW_ou
 
     - name: Setup Private subnet route table 
       ec2_vpc_route_table:
@@ -130,6 +140,21 @@
         region: "{{region}}"
         tags:
           Name: Vprofile-PrivRT
+        subnets:
+          - "{{privsub1_out.subnet.id}}"
+          - "{{privsub2_out.subnet.id}}"
+          - "{{privsub3_out.subnet.id}}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{NATGW_out.nat_gateway_id}}"
+      register: privRT_out
+
+    - name: Setup Private subnet route table
+      amazon.aws.ec2_vpc_route_table:
+        vpc_id: "{{vpcout.vpc.id}}"
+        region: "{{region}}"
+        tags:
+          Name: Devpro-PrivRT
         subnets:
           - "{{privsub1_out.subnet.id}}"
           - "{{privsub2_out.subnet.id}}"
@@ -154,7 +179,8 @@
         - NATGW_out.nat_gateway_id
         - privRT_out.route_table.id
 
-    - set_fact:
+    - name: Setting host facts using key=value pairs
+      ansible.builtin.set_fact:
         vpcid: "{{vpcout.vpc.id}}"
         pubsub1id: "{{pubsub1_out.subnet.id}}"
         pubsub2id: "{{pubsub2_out.subnet.id}}"
