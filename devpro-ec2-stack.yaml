@@ -68,6 +68,4 @@
       tags:
         Environment: Testing
 
-  - debug:
-      var: ec2_instance
 
