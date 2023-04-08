@@ -40,6 +40,10 @@
           rule_desc: allow all on port 80
       register: dproELB-sg_out
 
+  - name: Set dproELB-sg_out fact from module output
+    set_fact:
+      dproELB_sg_out: "{{ dproELB_sg_module_out }}"
+
   - name: Create Devpro Stack security group
     amazon.aws.ec2_security_group:
       name: dproStack-sg
@@ -58,6 +62,10 @@
           to_port: 22
           group_id: "{{ BastionSCid }}"
       register: dproStack-sg_out
+
+  - name: Set dproStack-sg_out fact from module output
+    set_fact:
+      dproStack-sg_out: "{{ dproStack-sg_out }}"
 
   - name: Udpate security group with its own sg id
     amazon.aws.ec2_security_group:
