@@ -85,7 +85,7 @@
       exact_count: 1
       security_group: "{{dproStack_sg_out.group_id}}"
       vpc_subnet_id: "{{privsub1id}}"
-    register: bastionHost_out
+    register: web01_out
 
   - name: Create tomcat app01
     amazon.aws.ec2_instance:
