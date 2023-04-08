@@ -40,8 +40,6 @@
           rule_desc: allow all on port 80
     register: dproELB_sg_out
 
-
-
   - name: Create Devpro Stack security group
     amazon.aws.ec2_security_group:
       name: dproStack_sg
@@ -54,7 +52,7 @@
           from_port: 80
           to_port: 80
           cidr_ip: 0.0.0.0/0
-          group_id: "{{ dproStack_sg_out.group_id }}"
+          group_id: "{{ dproELB_sg_out.group_id }}"
         - proto: tcp
           from_port: 22
           to_port: 22
