@@ -56,7 +56,7 @@
         - proto: tcp
           from_port: 22
           to_port: 22
-          group_id: "{{ BastionSCid }}"
+          group_id: "{{ BastionSGid }}"
     register: dproStack_sg_out
 
   - name: Udpate security group with its own sg id
