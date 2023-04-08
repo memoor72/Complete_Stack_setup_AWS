@@ -28,7 +28,7 @@
 
   - name: Create load balancer security group
     amazon.aws.ec2_security_group:
-      name: dproELB-sg
+      name: dproELB_sg
       description: Allow port 80 from everywhere and all ports within sg
       region: "{{ region }}"
       vpc_id: "{{ vpcid }}"
@@ -38,7 +38,7 @@
             - 80
           cidr_ip: 0.0.0.0/0
           rule_desc: allow all on port 80
-    register: dproELB-sg_out
+    register: dproELB_sg_out
 
 
 
@@ -59,7 +59,7 @@
           from_port: 22
           to_port: 22
           group_id: "{{ BastionSCid }}"
-    register: dproStack-sg_out
+    register: dproStack_sg_out
 
   - name: Udpate security group with its own sg id
     amazon.aws.ec2_security_group:
@@ -70,7 +70,7 @@
       purge_rules: false
       rules:
         - proto: all
-          group_id: "{{ dproStack-sg_out.group_id }}"
+          group_id: "{{ dproStack_sg_out.group_id }}"
 
   - name: Create Nginx web01
     amazon.aws.ec2_instance:
