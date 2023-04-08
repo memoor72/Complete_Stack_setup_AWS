@@ -102,7 +102,7 @@
       exact_count: 1
       security_group: "{{dproStack_sg_out.group_id}}"
       vpc_subnet_id: "{{privsub1id}}"
-    register: web01_out
+    register: app01_out
 
   - name: Create memcache mc01
     amazon.aws.ec2_instance:
