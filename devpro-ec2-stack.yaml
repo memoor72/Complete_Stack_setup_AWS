@@ -49,23 +49,110 @@
           from_port: 80
           to_port: 80
           cidr_ip: 0.0.0.0/0
-          group_id: "{{ dproELB-sg_out.group_id }}"
+          group_id: "{{ dproStack-sg_out.group_id }}"
         - proto: tcp
           from_port: 22
           to_port: 22
           group_id: "{{ BastionSCid }}"
     register: dproStack-sg_out
 
-  - name: start an instance with a public IP address
-    amazon.aws.ec2_instance:
-      key_name: "{{ keypair.key.name }}"
-      vpc_subnet_id: "{{ vpc_subnet_id }}"
-      instance_type: "{{ instance_type }}"
-      security_group: "{{ security_group.group_id }}"
-      network:
-        assign_public_ip: true
-      image_id: "{{ ami }}"
-      tags:
-        Environment: Testing
+  - name: Udpate security group with its own sg id
+    amazon.aws.ec2_security_group:
+      name: dproStack-sg
+      description: Allow port 22 from everywhere and all ports within sg
+      region: "{{ region }}"
+      vpc_id: "{{ vpcid }}"
+      purge_rules: false
+      rules:
+        - proto: all
+          group_id: "{{ dproStack-sg_out.group_id }}"
 
+  - name: Create Nginx web01
+    amazon.aws.ec2_instance:
+      key_name: dprokey
+      region: "{{region}}"
+      instance_type: t2.micro
+      image_id: "{{nginx_ami}}"
+      wait: yes
+      wait_timeout: 300
+      tags:
+        Name: "web01"
+        Project: Devpro
+        Owner: DevOps Team
+      exact_count: 1
+      security_group: "{{dproStack-sg_out.group_id}}"
+      vpc_subnet_id: "{{privsub1id}}"
+    register: bastionHost_out
+
+  - name: Create tomcat app01
+    amazon.aws.ec2_instance:
+      key_name: dprokey
+      region: "{{region}}"
+      instance_type: t2.micro
+      image_id: "{{tomcat_ami}}"
+      wait: yes
+      wait_timeout: 300
+      tags:
+        Name: "app01"
+        Project: Devpro
+        Owner: DevOps Team
+      exact_count: 1
+      security_group: "{{dproStack-sg_out.group_id}}"
+      vpc_subnet_id: "{{privsub1id}}"
+    register: web01_out
+
+  - name: Create memcache mc01
+    amazon.aws.ec2_instance:
+      key_name: dprokey
+      region: "{{region}}"
+      instance_type: t2.micro
+      image_id: "{{memcache_ami}}"
+      wait: yes
+      wait_timeout: 300
+      tags:
+        Name: "mc01"
+        Project: Devpro
+        Owner: DevOps Team
+      exact_count: 1
+      security_group: "{{dproStack-sg_out.group_id}}"
+      vpc_subnet_id: "{{privsub1id}}"
+    register: mc01_out
+
+  - name: Create RabbitMQ rmq01
+    amazon.aws.ec2_instance:
+      key_name: dprokey
+      region: "{{region}}"
+      instance_type: t2.micro
+      image_id: "{{rmq_ami}}"
+      wait: yes
+      wait_timeout: 300
+      tags:
+        Name: "rmq01"
+        Project: Devpro
+        Owner: DevOps Team
+      exact_count: 1
+      security_group: "{{dproStack-sg_out.group_id}}"
+      vpc_subnet_id: "{{privsub1id}}"
+    register: rmq01_out
+
+  - name: Create MYSQL db01
+    amazon.aws.ec2_instance:
+      key_name: dprokey
+      region: "{{region}}"
+      instance_type: t2.micro
+      image_id: "{{mysql_ami}}"
+      wait: yes
+      wait_timeout: 300
+      tags:
+        Name: "db01"
+        Project: Devpro
+        Owner: DevOps Team
+      exact_count: 1
+      security_group: "{{dproStack-sg_out.group_id}}"
+      vpc_subnet_id: "{{privsub1id}}"
+    register: db01_out
+
+  - name: Print return information from the previous task
+    ansible.builtin.debug:
+      var: db01_out
 
