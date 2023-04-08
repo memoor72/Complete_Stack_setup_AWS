@@ -1,11 +1,14 @@
-vpcid: vpc-0d8abefeab59c4e85
-pubsub1id: subnet-029d0a325dd3877d8
-pubsub2id: subnet-0ec74c5f276aceb76
-pubsub3id: subnet-0d215070a5576a331
-privsub1id: subnet-0260bba82c2c28cca
-privsub2id: subnet-0b0d9a7a99fc156d7
-privsub3id: subnet-003f6cbf573a1ea39
-igwid: igw-0b55662e684eadfde
-pubRTid: rtb-0009b42fb7a75e957
-NATGWid: nat-08f426c66f6ebd9fa
-privRTid: rtb-0f5128b9bd02c1344
+region: "us-east-2"
+vpcid: vpc-03522fa3a09d2fbac
+pubsub1id: subnet-04393aa6095a848c2
+pubsub2id: subnet-06377877593d4b6b6
+pubsub3id: subnet-0d888e92523a45eb6
+pubsub3id: subnet-0d888e92523a45eb6
+privsub1id: subnet-0de362b8791c8d59e
+privsub2id: subnet-0abc6c818ad8e2fcc
+privsub3id: subnet-08f91b8d83f6ed249
+igwid: igw-09e01ef006046bb4f
+pubRTid: rtb-0e73c0048845e42e0
+NATGWid: nat-07d27d680fdcfe03c
+privRTid: rtb-09ca0ce6931e557d3
+BastionSGid:

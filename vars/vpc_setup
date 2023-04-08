@@ -24,3 +24,17 @@ state: present
 # Bastion File
 bastion_ami: ami-0cc87e5027adcdca8
 MYIP: 0.0.0.0/0
+
+  vars:
+    instance_type: t2.micro
+    ami: ami-0c94855ba95c71c99
+    region: us-east-1
+    keypair: my-keypair
+    sg_name: my-security-group
+    sg_description: My security group
+    vpc_subnet_id: subnet-0582e4bc11a2ab0d4
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
