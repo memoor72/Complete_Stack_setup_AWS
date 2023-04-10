@@ -33,8 +33,9 @@
           - proto: tcp
             ports:
               - 22
-            cidr_ip: "{{MYIP}}"
-            rule_desc: allow all on port 80
+            cidr_ip: "{{ item }}"
+            rule_desc: allow SSH from specified IPs
+            with_items: "{{ MYIP }}"
       register: BastionSG_out
 
     - name: Create security group with specific IP address allowed
