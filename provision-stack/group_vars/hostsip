@@ -1,8 +1,8 @@
 # BEGIN ANSIBLE MANAGED BLOCK
-web01_ip: 172.20.4.4
-app01_ip: 172.20.4.194
-rmq01_ip: 172.20.4.70
-mc01_ip: 172.20.4.209
-db01_ip: 172.20.4.25
+web01_ip: 172.20.4.207
+app01_ip: 172.20.4.197
+rmq01_ip: 172.20.4.135
+mc01_ip: 172.20.4.129
+db01_ip: 172.20.4.92
 cntl ansible_host=127.0.0.1 ansible_connection=local
 # END ANSIBLE MANAGED BLOCK
