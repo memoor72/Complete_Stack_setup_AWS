@@ -70,7 +70,7 @@
           Project: Devpro
           Owner: DevOps Team 
         exact_count: 1
-        security_group: "{{BastionSG_out.group_id}}"
+        security_group: "{{BastionSG_out.results[0].group_id}}"
         vpc_subnet_id: "{{pubsub1id}}"
       register: bastionHost_out
 
