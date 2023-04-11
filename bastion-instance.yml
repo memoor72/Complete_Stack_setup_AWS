@@ -35,7 +35,7 @@
               - 22
             cidr_ip: "{{ item }}"
             rule_desc: allow SSH from specified IPs
-            with_items: "{{ MYIP }}"
+      with_items: "{{ MYIP }}"
       register: BastionSG_out
 
     - name: Create security group with specific IP address allowed
