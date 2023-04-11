@@ -52,6 +52,11 @@
             rule_desc: Allow SSH from 192.168.0.133
       register: ansible_controller_sg_out
 
+    - name: Debug BastionSG_out
+      ansible.builtin.debug:
+        var: BastionSG_out
+
+
     - name: Creating Bastion Host
       amazon.aws.ec2_instance:
         key_name: devpro-key
