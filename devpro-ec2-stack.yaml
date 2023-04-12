@@ -13,8 +13,8 @@
   - name: Import devprostacck variable
     include_vars: vars/devprostack
 
-  - name: import inventory_dpro
-    include_vars: provision-stack/group_vars/inventory_dpro
+  - name: import inventory_dpro.ini
+    include_vars: provision-stack/group_vars/inventory_dpro.ini
 
   - name: Create a key pair
     amazon.aws.ec2_key:
@@ -198,9 +198,9 @@
         dest: provision-stack/loginkey_vpro.pem
         mode: '0400'
 
-  - name: Insert/Update Inventory file provision-stack/inventory_dpro
+  - name: Insert/Update Inventory file provision-stack/inventory_dpro.ini
     blockinfile:
-      path: provision-stack/inventory_dpro
+      path: provision-stack/inventory_dpro.ini
       block: |
         web01 ansible_host={{ web01_out.instances[0].private_ip_address }}
         app01 ansible_host={{ app01_out.instances[0].private_ip_address }}
