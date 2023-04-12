@@ -6,7 +6,7 @@
       include_vars: vars/vpc_setup
 
     - name: import inventory_dpro.ini
-      include_vars: provision-stack/group_vars/inventory_dpro.ini
+      include_vars: vars/inventory_dpro.ini
 
     - name: Create Devpro VPC
       amazon.aws.ec2_vpc_net:
